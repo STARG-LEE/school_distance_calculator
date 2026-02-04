@@ -230,10 +230,7 @@ if st.button("🚀 통학시간 계산하기", type="primary", use_container_wid
             
             # 결과 테이블
             st.subheader("📊 계산 결과")
-            st.dataframe(
-                result_df.style.background_gradient(subset=["소요시간(분)"], cmap="RdYlGn_r"),
-                use_container_width=True
-            )
+            st.dataframe(result_df, use_container_width=True)
             
             # 통계
             valid_times = result_df["소요시간(분)"].dropna()
