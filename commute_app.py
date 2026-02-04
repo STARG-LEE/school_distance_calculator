@@ -103,21 +103,25 @@ def calculate_commute_times(
 st.title("🚌 학생 통학시간 계산기")
 st.markdown("학생 명단(이름, 주소)을 업로드하면 학교까지 대중교통 소요시간을 계산합니다.")
 
+# 고정 설정
+SCHOOL_ADDRESS = "경기도 포천시 해룡로 120"
+
+# API 키 (Streamlit secrets에서 불러오기)
+try:
+    api_key = st.secrets["GOOGLE_MAPS_API_KEY"]
+except KeyError:
+    api_key = None
+
 # 사이드바 설정
 with st.sidebar:
     st.header("⚙️ 설정")
     
-    api_key = st.text_input(
-        "Google Maps API 키",
-        type="password",
-        help="Google Cloud Console에서 발급받은 Distance Matrix API 키"
-    )
+    if not api_key:
+        st.error("API 키가 설정되지 않았습니다. Streamlit secrets에 GOOGLE_MAPS_API_KEY를 추가해주세요.")
+    else:
+        st.success("✅ API 키 로드 완료")
     
-    school_address = st.text_input(
-        "학교 주소",
-        value="",
-        placeholder="예: 서울대학교 또는 서울시 관악구 관악로 1"
-    )
+    st.info(f"🏫 학교: {SCHOOL_ADDRESS}")
     
     st.subheader("출발 시간 설정")
     use_departure_time = st.checkbox("특정 출발 시간 지정", value=True)
@@ -201,9 +205,7 @@ st.divider()
 if st.button("🚀 통학시간 계산하기", type="primary", use_container_width=True):
     # 유효성 검사
     if not api_key:
-        st.error("Google Maps API 키를 입력해주세요.")
-    elif not school_address:
-        st.error("학교 주소를 입력해주세요.")
+        st.error("API 키가 설정되지 않았습니다.")
     elif not uploaded_file:
         st.error("학생 명단 파일을 업로드해주세요.")
     else:
@@ -214,7 +216,7 @@ if st.button("🚀 통학시간 계산하기", type="primary", use_container_wid
         
         result_df = calculate_commute_times(
             students=students,
-            school_address=school_address,
+            school_address=SCHOOL_ADDRESS,
             api_key=api_key,
             mode="transit",
             departure_hour=departure_hour if use_departure_time else None,
