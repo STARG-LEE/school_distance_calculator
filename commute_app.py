@@ -81,12 +81,13 @@ def calculate_commute_times(
                     "소요시간(분)": element["duration"]["value"] // 60
                 })
             else:
+                error_status = element["status"]
                 results.append({
                     "이름": student["이름"],
                     "주소": student["주소"],
-                    "거리": "계산 불가",
+                    "거리": f"오류: {error_status}",
                     "거리(m)": None,
-                    "소요시간": "계산 불가",
+                    "소요시간": f"오류: {error_status}",
                     "소요시간(분)": None
                 })
         
